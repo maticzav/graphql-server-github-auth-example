@@ -1,0 +1,12 @@
+service: graphql-server-github-auth-example
+
+stages:
+  default: dev
+  dev: local
+
+datamodel:
+  - database/datamodel/types.graphql
+  - database/datamodel/enums.graphql
+
+schema: database/schema.graphql
+secret: donttellanyone

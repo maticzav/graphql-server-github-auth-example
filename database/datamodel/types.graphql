@@ -1,0 +1,13 @@
+type User {
+  id: ID! @unique
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  githubUserId: String! @unique
+
+  name: String!
+  bio: String!
+  public_repos: Int!
+  public_gists: Int!
+}

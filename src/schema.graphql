@@ -1,0 +1,14 @@
+# import User from '../database/schema.graphql'
+
+type Query {
+  me: User
+}
+
+type Mutation {
+  authenticate(githubCode: String!): AuthenticateUserPayload
+}
+
+type AuthenticateUserPayload {
+  user: User!
+  token: String!
+}
