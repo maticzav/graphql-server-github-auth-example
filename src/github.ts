@@ -2,9 +2,10 @@ import * as fetch from 'isomorphic-fetch'
 
 export interface GithubUser {
   id: string,
+  name: string,
   bio: string,
   public_repos: number,
-  pubic_gists: number
+  public_gists: number
 }
 
 export async function getGithubToken(githubCode: string): Promise<string> {

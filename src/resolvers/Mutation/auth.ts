@@ -10,7 +10,13 @@ async function getGraphcoolUser(ctx: Context, githubUserId: string): Promise<Use
 }
 
 async function createGraphcoolUser(ctx, githubUser: GithubUser): Promise<User> {
-  const user = await ctx.db.mutation.createUser({ data: githubUser })
+  const user = await ctx.db.mutation.createUser({ data: {
+    githubUserId: githubUser.id,
+    name: githubUser.name,
+    bio: githubUser.bio,
+    public_repos: githubUser.public_repos,
+    public_gists: githubUser.public_gists
+  }})
   return user
 }
 
@@ -25,7 +31,6 @@ export const auth = {
 
     if (!user) {
       user = await createGraphcoolUser(ctx, githubUser)
-      console.log(user)
     }
 
     return {
