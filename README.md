@@ -25,7 +25,13 @@ You need to configure these credentials from a new Github OAuth2 app as environm
 4. Register the application.
 5. Copy _Client ID_ and _Client Secret_ to the __.env__ file.
 
-#### Testing
+#### Testing with WEB
+
+* Serve `login.html`, for example by using `python -m SimpleHTTPServer`
+* Open `https://localhost:8000/login.html` in a browser, open the DevTools and authenticate with your Github account
+* Copy the code printed in the Console of your DevTools
+
+#### Testing with "simple hack"
 
 In order to obtain `Github code` you can use this little hack.
 
@@ -42,17 +48,6 @@ yarn start
 ```
 
 ## Project structure
-
-### Directories
-
-* `database`: GraphQL database service definitions (using Graphcool)
-* `src`: Source code of the gateway
-
-### Files
-
-* `.env`: Contains env vars (such as `GRAPHCOOL_ENPOINT` and `GRAPHCOOL_APIKEY`)
-* `graphcool.yml`: Graphcool database definition
-* `tsconfig.json`: Typescript compiler settings
 
 ## License
 MIT
