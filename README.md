@@ -6,11 +6,10 @@ using `graphql-yoga` and other tools.
 ## Getting started
 
 ### Initializing the Graphcool Database service
+
 ```sh
-cd database
 graphcool deploy # copy simple API endpoint into the `GRAPHCOOL_ENPOINT` env var in .env
 ```
-> also copy your Graphcool Database secret to `GRAPHCOOL_SECRET` env var in .env
 
 ### Setting up the Github OAuth2
 
@@ -27,6 +26,7 @@ You need to configure these credentials from a new Github OAuth2 app as environm
 
 #### Testing with WEB
 
+* Replace `__CLIENT_ID__` in `login.html`
 * Serve `login.html`, for example by using `python -m SimpleHTTPServer`
 * Open `https://localhost:8000/login.html` in a browser, open the DevTools and authenticate with your Github account
 * Copy the code printed in the Console of your DevTools
@@ -46,8 +46,6 @@ yarn install
 yarn start
 # Open http://localhost:5000/
 ```
-
-## Project structure
 
 ## License
 MIT
