@@ -33,11 +33,38 @@ You need to configure these credentials from a new Github OAuth2 app as environm
 
 #### Testing with "simple hack"
 
-In order to obtain `Github code` you can use this little hack.
+In order to obtain `Github code` you can also use this little hack.
 
-1. Navigate to `https://github.com/login/oauth/authorize?client_id=<client_id>&scope=user` and replace `<client_id>` with your Github client ID.
-2. Authorise access to the account and you will be redirected to `localhost:8000/login.html?code=<github_code>`.
-3. Copy the `<github_code>` to your GraphQL playground where you can test authentication.
+1. Navigate to `https://github.com/login/oauth/authorize?client_id={client_id}&scope=user` and replace `{client_id}` with your Github client ID.
+2. Authorise access to the account and you will be redirected to `localhost:8000/login.html?code={github_code}`.
+3. Copy the `{github_code}` part of `localhost:8000/login.html?code={github_code}` url to your GraphQL playground where you can test authentication.
+
+#### Queries and Mutations
+1. To authenticate the user use `Mutation authenticate`
+```gql
+mutation LoginOrSignup {
+    authenticate(githubCode: "mygithubcode") {
+        token
+        user {
+            name
+        }
+    }
+}
+```
+Every time `authenticate` is called user info is loaded from Github server using provided code. If code is valid, user id is compared against existing users. If no user with such id exists, new one is created, otherwise the existsing one is returned.
+
+2. To get info about currently authenticated user use `Query me`
+```gql
+query Me {
+    me {
+        name
+        bio
+        public_repos
+    }
+}
+```
+Server will use the token, provided under `Authorization: Bearer <token>` http header, to identify userId and will search the database for an existsing user. 
+
 
 ### Starting the Server
 
