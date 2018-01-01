@@ -1,4 +1,4 @@
-import { Context, getUserId, AuthError } from '../../utils'
+import { Context, getUserId, ownsNote, AuthError } from '../../utils'
 
 export const notes = {
     async createNote(_, { text }, ctx: Context, info) {
@@ -9,15 +9,7 @@ export const notes = {
         }})
     },
     async updateNote(_, { id, text }, ctx: Context, info) {
-        const userId = getUserId(ctx)
-        const hasPermission = await ctx.db.exists.notes({
-            id,
-            owner: { id: userId }
-        })
-
-        if (!hasPermission) {
-            throw new AuthError()
-        }
+        const isOwner = ownsNote(ctx, id)
 
         return await ctx.db.mutation.updateNote({
             where: { id },
@@ -25,15 +17,8 @@ export const notes = {
         })
     },
     async deleteNote(_, { id }, ctx: Context, info) {
-        const userId = getUserId(ctx)
-        const hasPermission = await ctx.db.exists.notes({
-            id,
-            owner: { id: userId }
-        })
+        const isOwner = ownsNote(ctx, id)
 
-        if (!hasPermission) {
-            throw new AuthError()
-        }
         return await ctx.db.mutation.deleteNote({ 
             where: { id }
         })

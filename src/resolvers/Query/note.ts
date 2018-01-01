@@ -1,15 +1,6 @@
-import { Context, getUserId, AuthError } from '../../utils'
+import { Context, ownsNote, AuthError } from '../../utils'
 
 export const note = async (_, { id }, ctx: Context, info) => {
-    const userId = getUserId(ctx)
-    const hasPermission = await ctx.db.exists.notes({
-        id,
-        owner: { id: userId }
-    })
-
-    if (!hasPermission) {
-        throw new AuthError()
-    }
-
+    const isOwner = ownsNote(ctx, id)
     return await ctx.db.query.note({ where: { id } })
-}
+}   
