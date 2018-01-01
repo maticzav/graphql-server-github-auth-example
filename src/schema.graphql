@@ -1,10 +1,14 @@
-# import User from '../database/schema.graphql'
+# import User, Note from './generated/database.graphql'
 
 type Query {
-  me: User
+  me: User,
+  note(id: ID!): Note
 }
 
 type Mutation {
+  createNote(text: String!): Note!
+  updateNote(id: ID!, text: String!): Note
+  deleteNote(id: ID!): Note
   authenticate(githubCode: String!): AuthenticateUserPayload
 }
 

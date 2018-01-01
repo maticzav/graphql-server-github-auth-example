@@ -40,31 +40,62 @@ In order to obtain `Github code` you can also use this little hack.
 3. Copy the `{github_code}` part of `localhost:8000/login.html?code={github_code}` url to your GraphQL playground where you can test authentication.
 
 #### Queries and Mutations
-1. To authenticate the user use `Mutation authenticate`
+1. To authenticate the user use `Mutation authenticate`:
 ```gql
 mutation LoginOrSignup {
     authenticate(githubCode: "mygithubcode") {
         token
         user {
             name
+            notes
         }
     }
 }
 ```
 Every time `authenticate` is called user info is loaded from Github server using provided code. If code is valid, user id is compared against existing users. If no user with such id exists, new one is created, otherwise the existsing one is returned.
 
-2. To get info about currently authenticated user use `Query me`
+2. To get info about currently authenticated user use `Query me`:
 ```gql
 query Me {
     me {
         name
         bio
         public_repos
+        notes {
+            id
+            text
+        }
     }
 }
 ```
-Server will use the token, provided under `Authorization: Bearer <token>` http header, to identify userId and will search the database for an existsing user. 
+Server will use the token, provided under `Authorization: Bearer <token>` http header, to identify userId and will search the database for an existsing user.
 
+3. To create a Note use `Mutation createNote`, this will create a note connected with your profile.
+```gql
+mutation NewNote {
+    createNote(text: "Super cool text.") {
+        id
+        text
+    }
+}
+
+query MyProfile {
+    me {
+        id
+        notes { # <- Note will appear here
+            id
+            text
+        }
+    }
+}
+```
+
+4. To read, delete or update Note you will have to be authenticated, otherwise __*NotAuthorized*__ Error will be returned.
+```gql
+query MyNote($id: ID!) {
+    note(id: $id) { text }
+}
+```
 
 ### Starting the Server
 

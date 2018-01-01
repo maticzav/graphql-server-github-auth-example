@@ -5,8 +5,7 @@ import * as jwt from 'jsonwebtoken'
 // Helpers -------------------------------------------------------------------
 
 async function getGraphcoolUser(ctx: Context, githubUserId: string): Promise<User> {
-  const user = await ctx.db.query.user({ where: { githubUserId }})
-  return user
+  return await ctx.db.query.user({ where: { githubUserId }})
 }
 
 async function createGraphcoolUser(ctx, githubUser: GithubUser): Promise<User> {
@@ -15,7 +14,8 @@ async function createGraphcoolUser(ctx, githubUser: GithubUser): Promise<User> {
     name: githubUser.name,
     bio: githubUser.bio,
     public_repos: githubUser.public_repos,
-    public_gists: githubUser.public_gists
+    public_gists: githubUser.public_gists,
+    notes: []
   }})
   return user
 }
@@ -28,6 +28,9 @@ export const auth = {
     const githubUser = await getGithubUser(githubToken)
 
     let user = await getGraphcoolUser(ctx, githubUser.id)
+
+    console.log('user', user);
+    
 
     if (!user) {
       user = await createGraphcoolUser(ctx, githubUser)

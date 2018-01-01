@@ -7,5 +7,4 @@ stages:
 datamodel:
   - database/datamodel/types.graphql
 
-schema: database/schema.graphql
 secret: donttellanyone

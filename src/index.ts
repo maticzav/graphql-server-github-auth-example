@@ -1,4 +1,4 @@
-import { Graphcool } from 'graphcool-binding'
+import { Graphcool } from './generated/graphcool'
 import { importSchema } from 'graphql-import'
 import { GraphQLServer } from 'graphql-yoga'
 
@@ -7,7 +7,6 @@ import { resolvers } from './resolvers'
 // Config --------------------------------------------------------------------
 
 const APP_SCHEMA_PATH = './src/schema.graphql'
-const DATABASE_SCHEMA_PATH = './database/schema.graphql'
 
 const typeDefs = importSchema(APP_SCHEMA_PATH)
 
@@ -19,7 +18,6 @@ const server = new GraphQLServer({
   context: req => ({
     ...req,
     db: new Graphcool({
-      schemaPath: DATABASE_SCHEMA_PATH,
       endpoint: process.env.GRAPHCOOL_ENDPOINT,
       secret: process.env.GRAPHCOOL_SECRET
     })
