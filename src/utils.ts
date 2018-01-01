@@ -14,6 +14,20 @@ export interface User {
   public_gists: string
 }
 
+export async function isNoteOwner(context: Context, id: string) {
+  const userId = getUserId(context)
+  const hasPermission = await context.db.exists.notes({
+    id,
+    owner: { id: userId }
+  })
+
+  if (!hasPermission) {
+    throw new AuthError()
+  }
+
+  return true
+}
+
 export function getUserId(context) {
   const Authorization = context.request.get('Authorization')
   if (Authorization) {
