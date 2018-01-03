@@ -35,9 +35,9 @@ You need to configure these credentials from a new Github OAuth2 app as environm
 
 In order to obtain `Github code` you can also use this little hack.
 
-1. Navigate to `https://github.com/login/oauth/authorize?client_id={client_id}&scope=user` and replace `{client_id}` with your Github client ID.
-2. Authorise access to the account and you will be redirected to `localhost:8000/login.html?code={github_code}`.
-3. Copy the `{github_code}` part of `localhost:8000/login.html?code={github_code}` url to your GraphQL playground where you can test authentication.
+1. Navigate to `https://github.com/login/oauth/authorize?client_id={GITHUB_CLIENT_ID}&scope=user` and replace `{GITHUB_CLIENT_ID}` with your Github client ID.
+2. Authorise access to the account and you will be redirected to `localhost:8000/login.html?code={GITHUB_CODE}`.
+3. Copy the `{GITHUB_CODE}` part of `localhost:8000/login.html?code={GITHUB_CODE}` url to your GraphQL playground where you can test authentication.
 
 #### Queries and Mutations
 1. To authenticate the user use `Mutation authenticate`:
