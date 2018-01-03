@@ -29,9 +29,6 @@ export const auth = {
 
     let user = await getGraphcoolUser(ctx, githubUser.id)
 
-    console.log('user', user);
-    
-
     if (!user) {
       user = await createGraphcoolUser(ctx, githubUser)
     }
