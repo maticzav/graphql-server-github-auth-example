@@ -52,18 +52,24 @@ type Mutation {
   resetData: Boolean
 }
 
+enum MutationType {
+  CREATED
+  UPDATED
+  DELETED
+}
+
 interface Node {
   id: ID!
 }
 
 type NoteConnection {
   pageInfo: PageInfo!
-  edges: [NoteEdge!]
+  edges: [NoteEdge]!
 }
 
 input NoteCreateInput {
   text: String!
-  owner: UserCreateOneWithoutNotesInput
+  owner: UserCreateOneWithoutNotesInput!
 }
 
 input NoteCreateManyWithoutOwnerInput {
@@ -89,6 +95,28 @@ enum NoteOrderByInput {
   updatedAt_DESC
   createdAt_ASC
   createdAt_DESC
+}
+
+type NotePreviousValues {
+  id: ID!
+  text: String!
+}
+
+type NoteSubscriptionPayload {
+  mutation: MutationType!
+  node: Note
+  updatedFields: [String!]
+  previousValues: NotePreviousValues
+}
+
+input NoteSubscriptionWhereInput {
+  AND: [NoteSubscriptionWhereInput!]
+  OR: [NoteSubscriptionWhereInput!]
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: NoteWhereInput
 }
 
 input NoteUpdateInput {
@@ -175,9 +203,14 @@ type Query {
   node(id: ID!): Node
 }
 
+type Subscription {
+  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  note(where: NoteSubscriptionWhereInput): NoteSubscriptionPayload
+}
+
 type UserConnection {
   pageInfo: PageInfo!
-  edges: [UserEdge!]
+  edges: [UserEdge]!
 }
 
 input UserCreateInput {
@@ -224,6 +257,34 @@ enum UserOrderByInput {
   public_repos_DESC
   public_gists_ASC
   public_gists_DESC
+}
+
+type UserPreviousValues {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  githubUserId: String!
+  name: String!
+  bio: String!
+  public_repos: Int!
+  public_gists: Int!
+}
+
+type UserSubscriptionPayload {
+  mutation: MutationType!
+  node: User
+  updatedFields: [String!]
+  previousValues: UserPreviousValues
+}
+
+input UserSubscriptionWhereInput {
+  AND: [UserSubscriptionWhereInput!]
+  OR: [UserSubscriptionWhereInput!]
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: UserWhereInput
 }
 
 input UserUpdateInput {

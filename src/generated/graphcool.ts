@@ -56,18 +56,24 @@ type Mutation {
   resetData: Boolean
 }
 
+enum MutationType {
+  CREATED
+  UPDATED
+  DELETED
+}
+
 interface Node {
   id: ID!
 }
 
 type NoteConnection {
   pageInfo: PageInfo!
-  edges: [NoteEdge!]
+  edges: [NoteEdge]!
 }
 
 input NoteCreateInput {
   text: String!
-  owner: UserCreateOneWithoutNotesInput
+  owner: UserCreateOneWithoutNotesInput!
 }
 
 input NoteCreateManyWithoutOwnerInput {
@@ -93,6 +99,28 @@ enum NoteOrderByInput {
   updatedAt_DESC
   createdAt_ASC
   createdAt_DESC
+}
+
+type NotePreviousValues {
+  id: ID!
+  text: String!
+}
+
+type NoteSubscriptionPayload {
+  mutation: MutationType!
+  node: Note
+  updatedFields: [String!]
+  previousValues: NotePreviousValues
+}
+
+input NoteSubscriptionWhereInput {
+  AND: [NoteSubscriptionWhereInput!]
+  OR: [NoteSubscriptionWhereInput!]
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: NoteWhereInput
 }
 
 input NoteUpdateInput {
@@ -179,9 +207,14 @@ type Query {
   node(id: ID!): Node
 }
 
+type Subscription {
+  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  note(where: NoteSubscriptionWhereInput): NoteSubscriptionPayload
+}
+
 type UserConnection {
   pageInfo: PageInfo!
-  edges: [UserEdge!]
+  edges: [UserEdge]!
 }
 
 input UserCreateInput {
@@ -228,6 +261,34 @@ enum UserOrderByInput {
   public_repos_DESC
   public_gists_ASC
   public_gists_DESC
+}
+
+type UserPreviousValues {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  githubUserId: String!
+  name: String!
+  bio: String!
+  public_repos: Int!
+  public_gists: Int!
+}
+
+type UserSubscriptionPayload {
+  mutation: MutationType!
+  node: User
+  updatedFields: [String!]
+  previousValues: UserPreviousValues
+}
+
+input UserSubscriptionWhereInput {
+  AND: [UserSubscriptionWhereInput!]
+  OR: [UserSubscriptionWhereInput!]
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: UserWhereInput
 }
 
 input UserUpdateInput {
@@ -397,26 +458,23 @@ export type NoteOrderByInput =
   'createdAt_ASC' |
   'createdAt_DESC'
 
-export interface NoteWhereUniqueInput {
-  id?: ID_Input
-}
+export type MutationType = 
+  'CREATED' |
+  'UPDATED' |
+  'DELETED'
 
-export interface UserCreateOneWithoutNotesInput {
-  create?: UserCreateWithoutNotesInput
-  connect?: UserWhereUniqueInput
-}
-
-export interface NoteUpdateWithoutOwnerDataInput {
-  text?: String
+export interface NoteCreateInput {
+  text: String
+  owner: UserCreateOneWithoutNotesInput
 }
 
 export interface UserWhereInput {
-  AND?: Array<UserWhereInput> | UserWhereInput
-  OR?: Array<UserWhereInput> | UserWhereInput
+  AND?: UserWhereInput[] | UserWhereInput
+  OR?: UserWhereInput[] | UserWhereInput
   id?: ID_Input
   id_not?: ID_Input
-  id_in?: Array<ID_Input> | ID_Input
-  id_not_in?: Array<ID_Input> | ID_Input
+  id_in?: ID_Input[] | ID_Input
+  id_not_in?: ID_Input[] | ID_Input
   id_lt?: ID_Input
   id_lte?: ID_Input
   id_gt?: ID_Input
@@ -429,24 +487,24 @@ export interface UserWhereInput {
   id_not_ends_with?: ID_Input
   createdAt?: DateTime
   createdAt_not?: DateTime
-  createdAt_in?: Array<DateTime> | DateTime
-  createdAt_not_in?: Array<DateTime> | DateTime
+  createdAt_in?: DateTime[] | DateTime
+  createdAt_not_in?: DateTime[] | DateTime
   createdAt_lt?: DateTime
   createdAt_lte?: DateTime
   createdAt_gt?: DateTime
   createdAt_gte?: DateTime
   updatedAt?: DateTime
   updatedAt_not?: DateTime
-  updatedAt_in?: Array<DateTime> | DateTime
-  updatedAt_not_in?: Array<DateTime> | DateTime
+  updatedAt_in?: DateTime[] | DateTime
+  updatedAt_not_in?: DateTime[] | DateTime
   updatedAt_lt?: DateTime
   updatedAt_lte?: DateTime
   updatedAt_gt?: DateTime
   updatedAt_gte?: DateTime
   githubUserId?: String
   githubUserId_not?: String
-  githubUserId_in?: Array<String> | String
-  githubUserId_not_in?: Array<String> | String
+  githubUserId_in?: String[] | String
+  githubUserId_not_in?: String[] | String
   githubUserId_lt?: String
   githubUserId_lte?: String
   githubUserId_gt?: String
@@ -459,8 +517,8 @@ export interface UserWhereInput {
   githubUserId_not_ends_with?: String
   name?: String
   name_not?: String
-  name_in?: Array<String> | String
-  name_not_in?: Array<String> | String
+  name_in?: String[] | String
+  name_not_in?: String[] | String
   name_lt?: String
   name_lte?: String
   name_gt?: String
@@ -473,8 +531,8 @@ export interface UserWhereInput {
   name_not_ends_with?: String
   bio?: String
   bio_not?: String
-  bio_in?: Array<String> | String
-  bio_not_in?: Array<String> | String
+  bio_in?: String[] | String
+  bio_not_in?: String[] | String
   bio_lt?: String
   bio_lte?: String
   bio_gt?: String
@@ -487,16 +545,16 @@ export interface UserWhereInput {
   bio_not_ends_with?: String
   public_repos?: Int
   public_repos_not?: Int
-  public_repos_in?: Array<Int> | Int
-  public_repos_not_in?: Array<Int> | Int
+  public_repos_in?: Int[] | Int
+  public_repos_not_in?: Int[] | Int
   public_repos_lt?: Int
   public_repos_lte?: Int
   public_repos_gt?: Int
   public_repos_gte?: Int
   public_gists?: Int
   public_gists_not?: Int
-  public_gists_in?: Array<Int> | Int
-  public_gists_not_in?: Array<Int> | Int
+  public_gists_in?: Int[] | Int
+  public_gists_not_in?: Int[] | Int
   public_gists_lt?: Int
   public_gists_lte?: Int
   public_gists_gt?: Int
@@ -506,18 +564,21 @@ export interface UserWhereInput {
   notes_none?: NoteWhereInput
 }
 
-export interface NoteUpdateWithoutOwnerInput {
-  where: NoteWhereUniqueInput
-  data: NoteUpdateWithoutOwnerDataInput
+export interface UserCreateWithoutNotesInput {
+  githubUserId: String
+  name: String
+  bio: String
+  public_repos: Int
+  public_gists: Int
 }
 
 export interface NoteWhereInput {
-  AND?: Array<NoteWhereInput> | NoteWhereInput
-  OR?: Array<NoteWhereInput> | NoteWhereInput
+  AND?: NoteWhereInput[] | NoteWhereInput
+  OR?: NoteWhereInput[] | NoteWhereInput
   id?: ID_Input
   id_not?: ID_Input
-  id_in?: Array<ID_Input> | ID_Input
-  id_not_in?: Array<ID_Input> | ID_Input
+  id_in?: ID_Input[] | ID_Input
+  id_not_in?: ID_Input[] | ID_Input
   id_lt?: ID_Input
   id_lte?: ID_Input
   id_gt?: ID_Input
@@ -530,8 +591,8 @@ export interface NoteWhereInput {
   id_not_ends_with?: ID_Input
   text?: String
   text_not?: String
-  text_in?: Array<String> | String
-  text_not_in?: Array<String> | String
+  text_in?: String[] | String
+  text_not_in?: String[] | String
   text_lt?: String
   text_lte?: String
   text_gt?: String
@@ -545,22 +606,24 @@ export interface NoteWhereInput {
   owner?: UserWhereInput
 }
 
-export interface NoteUpdateManyWithoutOwnerInput {
-  create?: Array<NoteCreateWithoutOwnerInput> | NoteCreateWithoutOwnerInput
-  connect?: Array<NoteWhereUniqueInput> | NoteWhereUniqueInput
-  disconnect?: Array<NoteWhereUniqueInput> | NoteWhereUniqueInput
-  delete?: Array<NoteWhereUniqueInput> | NoteWhereUniqueInput
-  update?: Array<NoteUpdateWithoutOwnerInput> | NoteUpdateWithoutOwnerInput
-  upsert?: Array<NoteUpsertWithoutOwnerInput> | NoteUpsertWithoutOwnerInput
+export interface NoteUpdateInput {
+  text?: String
+  owner?: UserUpdateOneWithoutNotesInput
 }
 
-export interface UserUpdateOneWithoutNotesInput {
-  create?: UserCreateWithoutNotesInput
-  connect?: UserWhereUniqueInput
-  disconnect?: UserWhereUniqueInput
-  delete?: UserWhereUniqueInput
-  update?: UserUpdateWithoutNotesInput
-  upsert?: UserUpsertWithoutNotesInput
+export interface NoteUpdateManyWithoutOwnerInput {
+  create?: NoteCreateWithoutOwnerInput[] | NoteCreateWithoutOwnerInput
+  connect?: NoteWhereUniqueInput[] | NoteWhereUniqueInput
+  disconnect?: NoteWhereUniqueInput[] | NoteWhereUniqueInput
+  delete?: NoteWhereUniqueInput[] | NoteWhereUniqueInput
+  update?: NoteUpdateWithoutOwnerInput[] | NoteUpdateWithoutOwnerInput
+  upsert?: NoteUpsertWithoutOwnerInput[] | NoteUpsertWithoutOwnerInput
+}
+
+export interface NoteUpsertWithoutOwnerInput {
+  where: NoteWhereUniqueInput
+  update: NoteUpdateWithoutOwnerDataInput
+  create: NoteCreateWithoutOwnerInput
 }
 
 export interface UserUpdateInput {
@@ -572,6 +635,38 @@ export interface UserUpdateInput {
   notes?: NoteUpdateManyWithoutOwnerInput
 }
 
+export interface UserCreateInput {
+  githubUserId: String
+  name: String
+  bio: String
+  public_repos: Int
+  public_gists: Int
+  notes?: NoteCreateManyWithoutOwnerInput
+}
+
+export interface UserSubscriptionWhereInput {
+  AND?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput
+  OR?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput
+  mutation_in?: MutationType[] | MutationType
+  updatedFields_contains?: String
+  updatedFields_contains_every?: String[] | String
+  updatedFields_contains_some?: String[] | String
+  node?: UserWhereInput
+}
+
+export interface NoteCreateManyWithoutOwnerInput {
+  create?: NoteCreateWithoutOwnerInput[] | NoteCreateWithoutOwnerInput
+  connect?: NoteWhereUniqueInput[] | NoteWhereUniqueInput
+}
+
+export interface NoteWhereUniqueInput {
+  id?: ID_Input
+}
+
+export interface NoteCreateWithoutOwnerInput {
+  text: String
+}
+
 export interface UserUpdateWithoutNotesDataInput {
   githubUserId?: String
   name?: String
@@ -580,46 +675,37 @@ export interface UserUpdateWithoutNotesDataInput {
   public_gists?: Int
 }
 
-export interface UserCreateWithoutNotesInput {
-  githubUserId: String
-  name: String
-  bio: String
-  public_repos: Int
-  public_gists: Int
+export interface UserUpdateOneWithoutNotesInput {
+  create?: UserCreateWithoutNotesInput
+  connect?: UserWhereUniqueInput
+  disconnect?: UserWhereUniqueInput
+  delete?: UserWhereUniqueInput
+  update?: UserUpdateWithoutNotesInput
+  upsert?: UserUpsertWithoutNotesInput
 }
 
-export interface UserWhereUniqueInput {
-  id?: ID_Input
-  githubUserId?: String
-}
-
-export interface NoteUpsertWithoutOwnerInput {
+export interface NoteUpdateWithoutOwnerInput {
   where: NoteWhereUniqueInput
-  update: NoteUpdateWithoutOwnerDataInput
-  create: NoteCreateWithoutOwnerInput
+  data: NoteUpdateWithoutOwnerDataInput
 }
 
-export interface NoteCreateInput {
-  text: String
-  owner?: UserCreateOneWithoutNotesInput
+export interface UserCreateOneWithoutNotesInput {
+  create?: UserCreateWithoutNotesInput
+  connect?: UserWhereUniqueInput
 }
 
-export interface NoteCreateWithoutOwnerInput {
-  text: String
+export interface NoteUpdateWithoutOwnerDataInput {
+  text?: String
 }
 
-export interface NoteCreateManyWithoutOwnerInput {
-  create?: Array<NoteCreateWithoutOwnerInput> | NoteCreateWithoutOwnerInput
-  connect?: Array<NoteWhereUniqueInput> | NoteWhereUniqueInput
-}
-
-export interface UserCreateInput {
-  githubUserId: String
-  name: String
-  bio: String
-  public_repos: Int
-  public_gists: Int
-  notes?: NoteCreateManyWithoutOwnerInput
+export interface NoteSubscriptionWhereInput {
+  AND?: NoteSubscriptionWhereInput[] | NoteSubscriptionWhereInput
+  OR?: NoteSubscriptionWhereInput[] | NoteSubscriptionWhereInput
+  mutation_in?: MutationType[] | MutationType
+  updatedFields_contains?: String
+  updatedFields_contains_every?: String[] | String
+  updatedFields_contains_some?: String[] | String
+  node?: NoteWhereInput
 }
 
 export interface UserUpdateWithoutNotesInput {
@@ -633,18 +719,22 @@ export interface UserUpsertWithoutNotesInput {
   create: UserCreateWithoutNotesInput
 }
 
-export interface NoteUpdateInput {
-  text?: String
-  owner?: UserUpdateOneWithoutNotesInput
+export interface UserWhereUniqueInput {
+  id?: ID_Input
+  githubUserId?: String
 }
 
 export interface Node {
   id: ID_Output
 }
 
-export interface NoteEdge {
-  node: Note
-  cursor: String
+export interface NotePreviousValues {
+  id: ID_Output
+  text: String
+}
+
+export interface BatchPayload {
+  count: Long
 }
 
 export interface User extends Node {
@@ -656,17 +746,41 @@ export interface User extends Node {
   bio: String
   public_repos: Int
   public_gists: Int
-  notes?: Array<Note>
+  notes?: Note[]
+}
+
+export interface UserSubscriptionPayload {
+  mutation: MutationType
+  node?: User
+  updatedFields?: String[]
+  previousValues?: UserPreviousValues
+}
+
+export interface Note extends Node {
+  id: ID_Output
+  owner: User
+  text: String
 }
 
 export interface NoteConnection {
   pageInfo: PageInfo
-  edges?: Array<NoteEdge>
+  edges: NoteEdge[]
+}
+
+export interface UserPreviousValues {
+  id: ID_Output
+  createdAt: DateTime
+  updatedAt: DateTime
+  githubUserId: String
+  name: String
+  bio: String
+  public_repos: Int
+  public_gists: Int
 }
 
 export interface UserConnection {
   pageInfo: PageInfo
-  edges?: Array<UserEdge>
+  edges: UserEdge[]
 }
 
 export interface PageInfo {
@@ -676,8 +790,11 @@ export interface PageInfo {
   endCursor?: String
 }
 
-export interface BatchPayload {
-  count: Long
+export interface NoteSubscriptionPayload {
+  mutation: MutationType
+  node?: Note
+  updatedFields?: String[]
+  previousValues?: NotePreviousValues
 }
 
 export interface UserEdge {
@@ -685,26 +802,22 @@ export interface UserEdge {
   cursor: String
 }
 
-export interface Note extends Node {
-  id: ID_Output
-  owner: User
-  text: String
+export interface NoteEdge {
+  node: Note
+  cursor: String
 }
 
 export type Long = string
 
 /*
-The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"4"`) or integer (such as `4`) input value will be accepted as an ID.
+The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1. 
 */
-export type ID_Input = string | number
-export type ID_Output = string
+export type Int = number
 
 /*
 The `Boolean` scalar type represents `true` or `false`.
 */
 export type Boolean = boolean
-
-export type DateTime = string
 
 /*
 The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
@@ -712,18 +825,22 @@ The `String` scalar type represents textual data, represented as UTF-8 character
 export type String = string
 
 /*
-The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1. 
+The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"4"`) or integer (such as `4`) input value will be accepted as an ID.
 */
-export type Int = number
+export type ID_Input = string | number
+export type ID_Output = string
+
+export type DateTime = string
 
 export interface Schema {
   query: Query
   mutation: Mutation
+  subscription: Subscription
 }
 
 export type Query = {
-  users: (args: { where?: UserWhereInput, orderBy?: UserOrderByInput, skip?: Int, after?: String, before?: String, first?: Int, last?: Int }, info?: GraphQLResolveInfo | string) => Promise<Array<User>>
-  notes: (args: { where?: NoteWhereInput, orderBy?: NoteOrderByInput, skip?: Int, after?: String, before?: String, first?: Int, last?: Int }, info?: GraphQLResolveInfo | string) => Promise<Array<Note>>
+  users: (args: { where?: UserWhereInput, orderBy?: UserOrderByInput, skip?: Int, after?: String, before?: String, first?: Int, last?: Int }, info?: GraphQLResolveInfo | string) => Promise<User[]>
+  notes: (args: { where?: NoteWhereInput, orderBy?: NoteOrderByInput, skip?: Int, after?: String, before?: String, first?: Int, last?: Int }, info?: GraphQLResolveInfo | string) => Promise<Note[]>
   user: (args: { where: UserWhereUniqueInput }, info?: GraphQLResolveInfo | string) => Promise<User | null>
   note: (args: { where: NoteWhereUniqueInput }, info?: GraphQLResolveInfo | string) => Promise<Note | null>
   usersConnection: (args: { where?: UserWhereInput, orderBy?: UserOrderByInput, skip?: Int, after?: String, before?: String, first?: Int, last?: Int }, info?: GraphQLResolveInfo | string) => Promise<UserConnection>
@@ -747,15 +864,25 @@ export type Mutation = {
   resetData: (args: {}, info?: GraphQLResolveInfo | string) => Promise<Boolean | null>
 }
 
+export type Subscription = {
+  user: (args: { where?: UserSubscriptionWhereInput }, infoOrQuery?: GraphQLResolveInfo | string) => Promise<AsyncIterator<UserSubscriptionPayload>>
+  note: (args: { where?: NoteSubscriptionWhereInput }, infoOrQuery?: GraphQLResolveInfo | string) => Promise<AsyncIterator<NoteSubscriptionPayload>>
+}
+
 export class Graphcool extends BaseGraphcool {
   
   constructor({ endpoint, secret, fragmentReplacements, debug }: BaseGraphcoolOptions) {
     super({ typeDefs, endpoint, secret, fragmentReplacements, debug });
   }
-  
+
+  exists = {
+    User: (where: UserWhereInput): Promise<boolean> => super.existsDelegate('query', 'users', { where }, {}, '{ id }'),
+    Note: (where: NoteWhereInput): Promise<boolean> => super.existsDelegate('query', 'notes', { where }, {}, '{ id }')
+  }
+
   query: Query = {
-    users: (args, info): Promise<Array<User>> => super.delegate('query', 'users', args, {}, info),
-    notes: (args, info): Promise<Array<Note>> => super.delegate('query', 'notes', args, {}, info),
+    users: (args, info): Promise<User[]> => super.delegate('query', 'users', args, {}, info),
+    notes: (args, info): Promise<Note[]> => super.delegate('query', 'notes', args, {}, info),
     user: (args, info): Promise<User | null> => super.delegate('query', 'user', args, {}, info),
     note: (args, info): Promise<Note | null> => super.delegate('query', 'note', args, {}, info),
     usersConnection: (args, info): Promise<UserConnection> => super.delegate('query', 'usersConnection', args, {}, info),
@@ -777,5 +904,10 @@ export class Graphcool extends BaseGraphcool {
     deleteManyUsers: (args, info): Promise<BatchPayload> => super.delegate('mutation', 'deleteManyUsers', args, {}, info),
     deleteManyNotes: (args, info): Promise<BatchPayload> => super.delegate('mutation', 'deleteManyNotes', args, {}, info),
     resetData: (args, info): Promise<Boolean | null> => super.delegate('mutation', 'resetData', args, {}, info)
+  }
+
+  subscription: Subscription = {
+    user: (args, infoOrQuery): Promise<AsyncIterator<UserSubscriptionPayload>> => super.delegateSubscription('user', args, infoOrQuery),
+    note: (args, infoOrQuery): Promise<AsyncIterator<NoteSubscriptionPayload>> => super.delegateSubscription('note', args, infoOrQuery)
   }
 }

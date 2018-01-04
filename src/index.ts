@@ -1,6 +1,6 @@
-import { Graphcool } from './generated/graphcool'
 import { importSchema } from 'graphql-import'
 import { GraphQLServer } from 'graphql-yoga'
+import { Graphcool } from './generated/graphcool'
 
 import { resolvers } from './resolvers'
 

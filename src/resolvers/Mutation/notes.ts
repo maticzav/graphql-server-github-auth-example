@@ -10,7 +10,7 @@ export const notes = {
     },
     async updateNote(_, { id, text }, ctx: Context, info) {
         const userId = getUserId(ctx)
-        const hasPermission = await ctx.db.exists.notes({
+        const hasPermission = await ctx.db.exists.Note({
             id,
             owner: { id: userId }
         })
@@ -26,7 +26,7 @@ export const notes = {
     },
     async deleteNote(_, { id }, ctx: Context, info) {
         const userId = getUserId(ctx)
-        const hasPermission = await ctx.db.exists.notes({
+        const hasPermission = await ctx.db.exists.Note({
             id,
             owner: { id: userId }
         })

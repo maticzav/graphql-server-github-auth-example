@@ -1,10 +1,9 @@
 service: graphql-server-github-auth-example
 
-stages:
-  default: dev
-  dev: local
+stage: dev
+cluster: local
 
 datamodel:
   - database/datamodel/types.graphql
 
-secret: donttellanyone
+secret: ${env:GRAPHCOOL_SECRET}
