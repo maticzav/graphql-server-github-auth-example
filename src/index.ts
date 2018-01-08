@@ -21,8 +21,7 @@ const server = new GraphQLServer({
       endpoint: process.env.GRAPHCOOL_ENDPOINT,
       secret: process.env.GRAPHCOOL_SECRET
     })
-  }),
-  options: { port: 5000 }
+  })
 })
 
 server.start(() => console.log(`Server is running on http://localhost:5000`))
