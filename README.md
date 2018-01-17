@@ -5,10 +5,10 @@ using `graphql-yoga` and other tools.
 
 ## Getting started
 
-### Initializing the Graphcool Database service
+### Initializing the Prisma Database service
 
 ```sh
-graphcool deploy # copy simple API endpoint into the `GRAPHCOOL_ENPOINT` env var in .env
+prisma deploy # copy simple API endpoint into the `PRISMA_ENPOINT` env var in .env
 ```
 
 ### Setting up the Github OAuth2

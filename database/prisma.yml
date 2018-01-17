@@ -1,0 +1,9 @@
+service: prisma-github-auth-example
+
+stage: dev
+cluster: local
+
+datamodel:
+  - datamodel/types.graphql
+
+secret: ${env:PRISMA_SECRET}
